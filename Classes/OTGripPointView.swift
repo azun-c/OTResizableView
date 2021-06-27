@@ -20,21 +20,19 @@
 import UIKit
 
 class OTGripPointView: UIView {
-
     var viewStrokeColor: UIColor?
-    let viewStrokeLineWidth:CGFloat = 2
+    let viewStrokeLineWidth: CGFloat = 2
     
     var gripPointStrokeColor: UIColor?
     var gripPointFillColor: UIColor?
     
-    let gripPointDiameter:CGFloat = 10
-    let gripPointStrokeWidth:CGFloat = 2
+    let gripPointDiameter: CGFloat = 10
+    let gripPointStrokeWidth: CGFloat = 2
     
     init() {
         super.init(frame: CGRect.zero)
         initialize()
     }
-    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -50,15 +48,17 @@ class OTGripPointView: UIView {
         backgroundColor = UIColor.clear
     }
     
-    
     override func draw(_ rect: CGRect) {
         let strokeRect = rect.insetBy(dx: gripPointDiameter, dy: gripPointDiameter)
         draw(stroke: strokeRect, lineWidth: viewStrokeLineWidth, color: viewStrokeColor!)
         
-        let leftX:CGFloat = gripPointDiameter/2
-        let rightX:CGFloat = rect.size.width - gripPointDiameter - gripPointDiameter/2
-        let upperY:CGFloat = gripPointDiameter/2
-        let lowerY:CGFloat = rect.size.height - gripPointDiameter - gripPointDiameter/2
+        let leftX: CGFloat = gripPointDiameter/2
+        let rightX: CGFloat = rect.size.width - gripPointDiameter - gripPointDiameter/2
+        let upperY: CGFloat = gripPointDiameter/2
+        let lowerY: CGFloat = rect.size.height - gripPointDiameter - gripPointDiameter/2
+        
+        let centerX: CGFloat = (rect.size.width - gripPointDiameter)/2
+        let centerY: CGFloat = (rect.size.height - gripPointDiameter)/2
         
         let gripPointSize = CGSize(width: gripPointDiameter, height: gripPointDiameter)
         
@@ -68,23 +68,33 @@ class OTGripPointView: UIView {
         let upperRight = CGRect(origin: CGPoint(x: rightX, y: upperY), size: gripPointSize)
         draw(circle: upperRight, strokeWidth: gripPointStrokeWidth, strokeColor: gripPointStrokeColor!, fillColor: gripPointFillColor!)
         
-        let lowerLeft = CGRect(origin: CGPoint(x: leftX, y: lowerY), size:gripPointSize)
+        let lowerLeft = CGRect(origin: CGPoint(x: leftX, y: lowerY), size: gripPointSize)
         draw(circle: lowerLeft, strokeWidth: gripPointStrokeWidth, strokeColor: gripPointStrokeColor!, fillColor: gripPointFillColor!)
         
-        let lowerRight = CGRect(origin: CGPoint(x: rightX, y: lowerY), size:gripPointSize)
+        let lowerRight = CGRect(origin: CGPoint(x: rightX, y: lowerY), size: gripPointSize)
         draw(circle: lowerRight, strokeWidth: gripPointStrokeWidth, strokeColor: gripPointStrokeColor!, fillColor: gripPointFillColor!)
+        
+        let top = CGRect(origin: .init(x: centerX, y: upperY), size: gripPointSize)
+        draw(circle: top, strokeWidth: gripPointStrokeWidth, strokeColor: gripPointStrokeColor!, fillColor: gripPointFillColor!)
+        
+        let left = CGRect(origin: .init(x: leftX, y: centerY), size: gripPointSize)
+        draw(circle: left, strokeWidth: gripPointStrokeWidth, strokeColor: gripPointStrokeColor!, fillColor: gripPointFillColor!)
+        
+        let bottom = CGRect(origin: .init(x: centerX, y: lowerY), size: gripPointSize)
+        draw(circle: bottom, strokeWidth: gripPointStrokeWidth, strokeColor: gripPointStrokeColor!, fillColor: gripPointFillColor!)
+        
+        let right = CGRect(origin: .init(x: rightX, y: centerY), size: gripPointSize)
+        draw(circle: right, strokeWidth: gripPointStrokeWidth, strokeColor: gripPointStrokeColor!, fillColor: gripPointFillColor!)
     }
     
-    
-    private func draw(stroke rect:CGRect,lineWidth:CGFloat,color:UIColor) {
+    private func draw(stroke rect: CGRect, lineWidth: CGFloat, color: UIColor) {
         let strokePath = UIBezierPath(rect: rect)
-        strokePath.lineWidth = lineWidth;
+        strokePath.lineWidth = lineWidth
         
         color.setStroke()
         
         strokePath.stroke()
     }
-    
     
     private func draw(circle rect: CGRect, strokeWidth: CGFloat, strokeColor: UIColor, fillColor: UIColor) {
         let circlePath = UIBezierPath(ovalIn: rect)
@@ -96,6 +106,4 @@ class OTGripPointView: UIView {
         circlePath.fill()
         circlePath.stroke()
     }
-    
-    
 }

@@ -10,11 +10,10 @@ import UIKit
 
 import OTResizableView
 
-class ViewController: UIViewController,OTResizableViewDelegate {
-
+class ViewController: UIViewController, OTResizableViewDelegate {
     var resizableView = OTResizableView(contentView: UIView())
     
-    @IBOutlet weak var mainView: UIView!
+    @IBOutlet var mainView: UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,15 +22,17 @@ class ViewController: UIViewController,OTResizableViewDelegate {
         yourView.backgroundColor = UIColor.blue
         
         resizableView = OTResizableView(contentView: yourView)
-        resizableView.delegate = self;
+        resizableView.gripPointFillColor = .yellow
+        resizableView.gripPointStrokeColor = .yellow
+        resizableView.viewStrokeColor = .green
+        resizableView.keepAspectEnabled = false
+        resizableView.delegate = self
         
         mainView.addSubview(resizableView)
     }
 
-    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        
     }
     
     @IBAction func tappedChangeAspectButton(_ sender: UIButton) {
@@ -51,16 +52,13 @@ class ViewController: UIViewController,OTResizableViewDelegate {
         print("tapBegin:\(resizableView.frame)")
     }
     
-    
     func tapChanged(_ resizableView: OTResizableView) {
         print("tapChanged:\(resizableView.frame))")
     }
     
-    
     func tapMoved(_ resizableView: OTResizableView) {
         print("tapMoved:\(resizableView.frame))")
     }
-    
     
     func tapEnd(_ resizableView: OTResizableView) {
         print("tapEnd:\(resizableView.frame)")

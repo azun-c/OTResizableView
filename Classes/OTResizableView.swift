@@ -25,25 +25,24 @@ import UIKit
     case LowerLeft
     case LowerRight
     case Center
+    case Top
+    case Left
+    case Bottom
+    case Right
     case None
 }
 
-
-@objc public protocol OTResizableViewDelegate: class {
+@objc public protocol OTResizableViewDelegate: AnyObject {
+    @objc optional func tapBegin(_ resizableView: OTResizableView)
     
-    @objc optional func tapBegin(_ resizableView:OTResizableView)
+    @objc optional func tapChanged(_ resizableView: OTResizableView)
     
-    @objc optional func tapChanged(_ resizableView:OTResizableView)
+    @objc optional func tapMoved(_ resizableView: OTResizableView)
     
-    @objc optional func tapMoved(_ resizableView:OTResizableView)
-    
-    @objc optional func tapEnd(_ resizableView:OTResizableView)
-    
+    @objc optional func tapEnd(_ resizableView: OTResizableView)
 }
 
-
 @objc open class OTResizableView: UIView, UIGestureRecognizerDelegate {
-    
     @objc public weak var delegate: OTResizableViewDelegate?
     
     @objc public var minimumWidth: CGFloat = 100 {
@@ -75,7 +74,7 @@ import UIKit
     
     @objc open var resizeEnabled = false {
         didSet {
-            gripPointView.isHidden = resizeEnabled ? false:true
+            gripPointView.isHidden = resizeEnabled ? false : true
         }
     }
     
@@ -86,7 +85,7 @@ import UIKit
     }
     
     @objc open var gripPointStrokeColor = UIColor.white {
-        didSet{
+        didSet {
             gripPointView.gripPointStrokeColor = gripPointStrokeColor
         }
     }
@@ -103,7 +102,7 @@ import UIKit
     
     @objc public private(set) var contentView = UIView()
     
-    @objc public private(set) var currentTappedPostion:TappedPosition = .None
+    @objc public private(set) var currentTappedPostion: TappedPosition = .None
     
     private var startFrame = CGRect.zero
     private var minimumPoint = CGPoint.zero
@@ -115,7 +114,8 @@ import UIKit
     
     private var gripPointView = OTGripPointView()
     
-    //MARK: - Initialize
+    // MARK: - Initialize
+
     public init(contentView: UIView) {
         super.init(frame: contentView.frame.insetBy(dx: -gripPointDiameter, dy: -gripPointDiameter))
         
@@ -124,37 +124,33 @@ import UIKit
         setContentView(newContentView: contentView)
     }
     
-    
     @available(*, unavailable)
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
     
     private func initialize() {
         backgroundColor = UIColor.clear
         prepareGesture()
     }
     
-    
-    //MARK: - LifeCycle
+    // MARK: - LifeCycle
+
     override open func willMove(toSuperview newSuperview: UIView?) {
         super.willMove(toSuperview: newSuperview)
         
         prepareGripPointView()
     }
     
-    
-    //MARK: - Prepare
+    // MARK: - Prepare
+
     private func prepareGesture() {
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap(gesture:)))
         addGestureRecognizer(tapGestureRecognizer)
         
-        
         let panGesutureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(handlePan(gesture:)))
         addGestureRecognizer(panGesutureRecognizer)
     }
-    
     
     private func prepareGripPointView() {
         gripPointView.removeFromSuperview()
@@ -169,18 +165,17 @@ import UIKit
         addSubview(gripPointView)
     }
     
-    
-    //MARK: - Set
+    // MARK: - Set
+
     private func setContentView(newContentView: UIView) {
         contentView.removeFromSuperview()
-        contentView = newContentView;
+        contentView = newContentView
         contentView.frame.origin = CGPoint(x: gripPointDiameter, y: gripPointDiameter)
         addSubview(contentView)
         
         gripPointView.removeFromSuperview()
         addSubview(gripPointView)
     }
-    
     
     @objc public func setResizedFrame(newFrame: CGRect) {
         super.frame = newFrame
@@ -190,25 +185,22 @@ import UIKit
         gripPointView.setNeedsDisplay()
     }
     
-    
-    //MARK: - Gesture
+    // MARK: - Gesture
+
     @objc open func handleTap(gesture: UITapGestureRecognizer) {
         delegate?.tapBegin?(self)
     }
-    
     
     @objc open func handlePan(gesture: UIPanGestureRecognizer) {
         switch gesture.state {
         case .began:
             if resizeEnabled {
-                
-                startFrame = frame;
+                startFrame = frame
                 
                 touchStartPointInSuperview = gesture.location(in: superview)
                 touchStartPointInSelf = gesture.location(in: self)
                 
                 currentTappedPostion = detectCurrentTappedPosition()
-                
                 
                 switch currentTappedPostion {
                 case .UpperLeft, .UpperRight, .LowerLeft, .LowerRight:
@@ -217,6 +209,9 @@ import UIKit
                     if keepAspectEnabled {
                         maxAspectFrame = measureMaximumKeepAspectFrame()
                     }
+                    
+                case .Top, .Left, .Bottom, .Right:
+                    minimumPoint = measureMinimumPoint()
                     
                 case .Center:
                     break
@@ -247,6 +242,61 @@ import UIKit
                     
                     setResizedFrame(newFrame: resizedRect)
                     
+                    delegate?.tapChanged?(self)
+                    
+                case .Top:
+                    let currentTouchPointInSuperview = gesture.location(in: superview)
+                        
+                    var resizedRect = CGRect.zero
+                        
+                    let differenceY = currentTouchPointInSuperview.y - touchStartPointInSuperview.y
+                        
+                    resizedRect = generateNormalFrame(position: currentTappedPostion, differenceX: 0, differenceY: differenceY)
+                    resizedRect = adjustNormal(rect: resizedRect)
+                        
+                    setResizedFrame(newFrame: resizedRect)
+                        
+                    delegate?.tapChanged?(self)
+                case .Left:
+                    let currentTouchPointInSuperview = gesture.location(in: superview)
+                            
+                    var resizedRect = CGRect.zero
+                            
+                    let differenceX = currentTouchPointInSuperview.x - touchStartPointInSuperview.x
+                            
+                    resizedRect = generateNormalFrame(position: currentTappedPostion, differenceX: differenceX, differenceY: 0)
+                    resizedRect = adjustNormal(rect: resizedRect)
+                            
+                    setResizedFrame(newFrame: resizedRect)
+                            
+                    delegate?.tapChanged?(self)
+                    
+                case .Bottom:
+                    let currentTouchPointInSuperview = gesture.location(in: superview)
+                            
+                    var resizedRect = CGRect.zero
+                            
+                    let differenceY = currentTouchPointInSuperview.y - touchStartPointInSuperview.y
+                            
+                    resizedRect = generateNormalFrame(position: currentTappedPostion, differenceX: 0, differenceY: differenceY)
+                    resizedRect = adjustNormal(rect: resizedRect)
+                            
+                    setResizedFrame(newFrame: resizedRect)
+                            
+                    delegate?.tapChanged?(self)
+                    
+                case .Right:
+                    let currentTouchPointInSuperview = gesture.location(in: superview)
+                                
+                    var resizedRect = CGRect.zero
+                                
+                    let differenceX = currentTouchPointInSuperview.x - touchStartPointInSuperview.x
+                                
+                    resizedRect = generateNormalFrame(position: currentTappedPostion, differenceX: differenceX, differenceY: 0)
+                    resizedRect = adjustNormal(rect: resizedRect)
+                                
+                    setResizedFrame(newFrame: resizedRect)
+                                
                     delegate?.tapChanged?(self)
                     
                 case .Center:
@@ -287,10 +337,9 @@ import UIKit
         }
     }
     
-    
-    //MARK: - Normal resize
-    private func generateNormalFrame(position:TappedPosition, differenceX: CGFloat, differenceY: CGFloat) -> CGRect {
-        
+    // MARK: - Normal resize
+
+    private func generateNormalFrame(position: TappedPosition, differenceX: CGFloat, differenceY: CGFloat) -> CGRect {
         let startX = startFrame.origin.x
         let startY = startFrame.origin.y
         let startWidth = startFrame.width
@@ -305,6 +354,18 @@ import UIKit
             return CGRect(x: startX + differenceX, y: startY, width: startWidth - differenceX, height: startHeight + differenceY)
         case .LowerRight:
             return CGRect(x: startX, y: startY, width: startWidth + differenceX, height: startHeight + differenceY)
+            
+        case .Top:
+            return CGRect(x: startX, y: startY + differenceY, width: startWidth, height: startHeight - differenceY)
+            
+        case .Left:
+            return CGRect(x: startX + differenceX, y: startY, width: startWidth - differenceX, height: startHeight)
+                
+        case .Bottom:
+            return CGRect(x: startX, y: startY, width: startWidth, height: startHeight + differenceY)
+            
+        case .Right:
+            return CGRect(x: startX, y: startY, width: startWidth + differenceX, height: startHeight)
         default:
             return CGRect.zero
         }
@@ -353,10 +414,9 @@ import UIKit
         return CGRect(x: x, y: y, width: width, height: height)
     }
     
-    
-    //MARK: - Keep Aspect resize
-    private func generateKeepAspectFrame(position:TappedPosition, currentTouchPoint: CGPoint) -> CGRect {
-        
+    // MARK: - Keep Aspect resize
+
+    private func generateKeepAspectFrame(position: TappedPosition, currentTouchPoint: CGPoint) -> CGRect {
         let scaleTuple = generateScale(position: position, currentTouchPoint: currentTouchPoint)
         let widthScale = scaleTuple.widthScale
         let heightScale = scaleTuple.heightScale
@@ -379,19 +439,28 @@ import UIKit
         case .UpperLeft:
             return CGRect(x: startFrame.origin.x + differenceX, y: startFrame.origin.y + differenceY, width: width, height: height)
         case .UpperRight:
-            return CGRect(x: startFrame.origin.x, y: startFrame.origin.y + differenceY , width: width, height: height)
+            return CGRect(x: startFrame.origin.x, y: startFrame.origin.y + differenceY, width: width, height: height)
         case .LowerLeft:
             return CGRect(x: startFrame.origin.x + differenceX, y: startFrame.origin.y, width: width, height: height)
         case .LowerRight:
             return CGRect(x: startFrame.origin.x, y: startFrame.origin.y, width: width, height: height)
+            
+        case .Top:
+            return CGRect(x: startFrame.origin.x, y: startFrame.origin.y + differenceY, width: width, height: height)
+        case .Left:
+            return CGRect(x: startFrame.origin.x + differenceX, y: startFrame.origin.y, width: width, height: height)
+                
+        case .Bottom:
+            return CGRect(x: startFrame.origin.x, y: startFrame.origin.y - differenceY, width: width, height: height)
+                
+        case .Right:
+            return CGRect(x: startFrame.origin.x + differenceX, y: startFrame.origin.y, width: width, height: height)
         default:
             return CGRect.zero
         }
-        
     }
     
-    
-    private func generateScale(position:TappedPosition, currentTouchPoint: CGPoint) -> (widthScale: CGFloat, heightScale: CGFloat) {
+    private func generateScale(position: TappedPosition, currentTouchPoint: CGPoint) -> (widthScale: CGFloat, heightScale: CGFloat) {
         switch position {
         case .UpperLeft:
             return (widthScale: (startFrame.origin.x - currentTouchPoint.x + startFrame.width) / startFrame.width,
@@ -410,9 +479,7 @@ import UIKit
         }
     }
     
-    
-    private func adjustKeepAspect(rect: CGRect) -> CGRect{
-        
+    private func adjustKeepAspect(rect: CGRect) -> CGRect {
         guard let superview = superview else {
             return CGRect.zero
         }
@@ -459,32 +526,35 @@ import UIKit
         return CGRect(x: x, y: y, width: width, height: height)
     }
     
-    
-    //MARK: - Prepare TapChanged
+    // MARK: - Prepare TapChanged
+
     private func detectCurrentTappedPosition() -> TappedPosition {
-        if touchStartPointInSelf.x < gripTappableSize && touchStartPointInSelf.y < gripTappableSize {
-            
+        if touchStartPointInSelf.x < gripTappableSize, touchStartPointInSelf.y < gripTappableSize {
             return .UpperLeft
-            
-        } else if bounds.size.width - touchStartPointInSelf.x < gripTappableSize && touchStartPointInSelf.y < gripTappableSize {
-            
-            return .UpperRight
-            
-        } else if touchStartPointInSelf.x < gripTappableSize && bounds.size.height - touchStartPointInSelf.y < gripTappableSize {
-            
-            return .LowerLeft
-            
-        } else if bounds.size.width - touchStartPointInSelf.x < gripTappableSize && bounds.size.height - touchStartPointInSelf.y < gripTappableSize {
-            
-            return .LowerRight
-            
-        } else {
-            
-            return .Center
-            
         }
+        if bounds.size.width - touchStartPointInSelf.x < gripTappableSize, touchStartPointInSelf.y < gripTappableSize {
+            return .UpperRight
+        }
+        if touchStartPointInSelf.x < gripTappableSize, bounds.size.height - touchStartPointInSelf.y < gripTappableSize {
+            return .LowerLeft
+        }
+        if bounds.size.width - touchStartPointInSelf.x < gripTappableSize, bounds.size.height - touchStartPointInSelf.y < gripTappableSize {
+            return .LowerRight
+        }
+        if touchStartPointInSelf.y < gripTappableSize {
+            return .Top
+        }
+        if touchStartPointInSelf.x < gripTappableSize {
+            return .Left
+        }
+        if bounds.size.height - touchStartPointInSelf.y < gripTappableSize {
+            return .Bottom
+        }
+        if bounds.size.width - touchStartPointInSelf.x < gripTappableSize {
+            return .Right
+        }
+        return .Center
     }
-    
     
     private func measureMinimumPoint() -> CGPoint {
         let originX = startFrame.origin.x
@@ -494,29 +564,34 @@ import UIKit
         let lowerLeftY = originY + startFrame.size.height
         
         switch currentTappedPostion {
-            
         case .UpperLeft:
-            
             return CGPoint(x: upperRightX - minimumWidth, y: lowerLeftY - minimumHeight)
             
         case .UpperRight:
-            
             return CGPoint(x: originX, y: lowerLeftY - minimumHeight)
             
         case .LowerLeft:
-            
             return CGPoint(x: upperRightX - minimumWidth, y: originY)
             
         case .LowerRight:
+            return CGPoint(x: originX, y: originY)
             
+        case .Top:
+            return CGPoint(x: originX, y: lowerLeftY - minimumHeight)
+                
+        case .Left:
+            return CGPoint(x: upperRightX - minimumWidth, y: originY)
+            
+        case .Bottom:
+            return CGPoint(x: originX, y: originY)
+            
+        case .Right:
             return CGPoint(x: originX, y: originY)
             
         default:
-            
             return CGPoint.zero
         }
     }
-    
     
     private func measureMaximumKeepAspectFrame() -> CGRect {
         guard let superview = superview else {
@@ -564,10 +639,8 @@ import UIKit
             break
         }
         
-        return xMaxFrame.width/frame.width < yMaxFrame.width/frame.width  ? xMaxFrame : yMaxFrame
-        
+        return xMaxFrame.width / frame.width < yMaxFrame.width / frame.width ? xMaxFrame : yMaxFrame
     }
-    
     
     private func moveView(touchPoint: CGPoint, startPoint: CGPoint) {
         var newCenter = CGPoint(x: center.x + touchPoint.x - startPoint.x, y: center.y + touchPoint.y - startPoint.y)
@@ -575,24 +648,23 @@ import UIKit
         let midPointX = bounds.midX
         
         if newCenter.x > superview!.bounds.size.width - midPointX {
-            newCenter.x = superview!.bounds.size.width - midPointX;
+            newCenter.x = superview!.bounds.size.width - midPointX
         }
         
         if newCenter.x < midPointX {
-            newCenter.x = midPointX;
+            newCenter.x = midPointX
         }
         
         let midPointY = bounds.midY
         
         if newCenter.y > superview!.bounds.size.height - midPointY {
-            newCenter.y = superview!.bounds.size.height - midPointY;
+            newCenter.y = superview!.bounds.size.height - midPointY
         }
         
         if newCenter.y < midPointY {
-            newCenter.y = midPointY;
+            newCenter.y = midPointY
         }
         
-        center = newCenter;
+        center = newCenter
     }
 }
-
