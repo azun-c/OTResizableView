@@ -47,6 +47,12 @@ Add this to your Cartfile.
 github "PKPK-Carnage/OTResizableView"
 ```
 
+### Swift Package Manager
+
+1. Select `Xcode -> File -> Swift Packages -> Add Package Dependency...` 
+2. Enter `https://github.com/qhu91it/OTResizableView.git`.
+3. Click `Next`, then select branch master, complete.
+
 ## Help
 
 If you want to support this framework, you can do these things.
