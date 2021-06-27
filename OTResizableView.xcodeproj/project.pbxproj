@@ -7,16 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0430C1421F524B8000860C50 /* OTResizableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0430C1411F524B8000860C50 /* OTResizableView.swift */; };
-		0430C14B1F525C4A00860C50 /* OTGripPointView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0430C14A1F525C4A00860C50 /* OTGripPointView.swift */; };
+		042D30B62689062000A387FC /* OTResizableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042D30B42689062000A387FC /* OTResizableView.swift */; };
+		042D30B72689062000A387FC /* OTGripPointView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 042D30B52689062000A387FC /* OTGripPointView.swift */; };
 		0430C14E1F52954D00860C50 /* OTResizableView.h in Headers */ = {isa = PBXBuildFile; fileRef = 0430C14D1F52954D00860C50 /* OTResizableView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		042D30B42689062000A387FC /* OTResizableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OTResizableView.swift; sourceTree = "<group>"; };
+		042D30B52689062000A387FC /* OTGripPointView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OTGripPointView.swift; sourceTree = "<group>"; };
 		0430C1041F52499C00860C50 /* OTResizableView.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = OTResizableView.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0430C1081F52499C00860C50 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0430C1411F524B8000860C50 /* OTResizableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OTResizableView.swift; sourceTree = "<group>"; };
-		0430C14A1F525C4A00860C50 /* OTGripPointView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OTGripPointView.swift; sourceTree = "<group>"; };
 		0430C14D1F52954D00860C50 /* OTResizableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OTResizableView.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -31,10 +31,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		042D30B32689062000A387FC /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				042D30B52689062000A387FC /* OTGripPointView.swift */,
+				042D30B42689062000A387FC /* OTResizableView.swift */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
 		0430C0FA1F52499C00860C50 = {
 			isa = PBXGroup;
 			children = (
-				0430C10F1F524A0500860C50 /* Classes */,
+				042D30B32689062000A387FC /* Sources */,
 				0430C1061F52499C00860C50 /* OTResizableView */,
 				0430C1051F52499C00860C50 /* Products */,
 			);
@@ -55,15 +64,6 @@
 				0430C14D1F52954D00860C50 /* OTResizableView.h */,
 			);
 			path = OTResizableView;
-			sourceTree = "<group>";
-		};
-		0430C10F1F524A0500860C50 /* Classes */ = {
-			isa = PBXGroup;
-			children = (
-				0430C14A1F525C4A00860C50 /* OTGripPointView.swift */,
-				0430C1411F524B8000860C50 /* OTResizableView.swift */,
-			);
-			path = Classes;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -148,8 +148,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0430C1421F524B8000860C50 /* OTResizableView.swift in Sources */,
-				0430C14B1F525C4A00860C50 /* OTGripPointView.swift in Sources */,
+				042D30B62689062000A387FC /* OTResizableView.swift in Sources */,
+				042D30B72689062000A387FC /* OTGripPointView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,6 +292,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = TomosukeOkada.OTResizableView;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -317,6 +318,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = TomosukeOkada.OTResizableView;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

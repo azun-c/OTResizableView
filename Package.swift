@@ -1,5 +1,6 @@
-// swift-tools-version:5.1
+// swift-tools-version:5.3
 // The swift-tools-version declares the minimum version of Swift required to build this package.
+
 import PackageDescription
 
 let package = Package(
@@ -10,16 +11,16 @@ let package = Package(
     products: [
         .library(
             name: "OTResizableView",
-            targets: ["OTResizableView"]),
+            targets: ["OTResizableView"]
+        ),
     ],
-    dependencies: [],
     targets: [
         .target(
             name: "OTResizableView",
             dependencies: [],
-            path: "Classes",
+            path: "Sources",
             sources: ["OTGripPointView.swift", "OTResizableView.swift"]
-          )
+        )
     ],
     swiftLanguageVersions: [.v5]
 )

@@ -72,6 +72,8 @@ import UIKit
     
     @objc open var minimumAspectScale: CGFloat = 1
     
+    @objc open var enableTouch = true
+    
     @objc open var resizeEnabled = false {
         didSet {
             gripPointView.isHidden = resizeEnabled ? false : true
@@ -146,9 +148,11 @@ import UIKit
 
     private func prepareGesture() {
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap(gesture:)))
+        tapGestureRecognizer.delegate = self
         addGestureRecognizer(tapGestureRecognizer)
         
         let panGesutureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(handlePan(gesture:)))
+        panGesutureRecognizer.delegate = self
         addGestureRecognizer(panGesutureRecognizer)
     }
     
@@ -156,7 +160,7 @@ import UIKit
         gripPointView.removeFromSuperview()
         
         gripPointView = OTGripPointView(frame: bounds)
-        gripPointView.isHidden = true
+        gripPointView.isHidden = resizeEnabled ? false : true
         
         gripPointView.viewStrokeColor = viewStrokeColor
         gripPointView.gripPointStrokeColor = gripPointStrokeColor
@@ -186,7 +190,11 @@ import UIKit
     }
     
     // MARK: - Gesture
-
+    
+    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+        return enableTouch
+    }
+    
     @objc open func handleTap(gesture: UITapGestureRecognizer) {
         delegate?.tapBegin?(self)
     }
